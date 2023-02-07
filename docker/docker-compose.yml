@@ -1,0 +1,20 @@
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: endpoint_monitoring_db
+    command: --init-file '/var/lib/db_init.sql'
+    ports:
+      - 33060:3306
+    volumes:
+      - my_sql_volume:/var/lib/mysql
+      - ./../db/db_init.sql:/var/lib/db_init.sql
+    environment:
+      MYSQL_ROOT_PASSWORD: '***'
+      
+volumes:
+  my_sql_volume:
+    driver: local
+    driver_opts:
+       o: bind
+       type: none
+       device: 'C:\MySql'
