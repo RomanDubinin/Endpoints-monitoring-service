@@ -17,10 +17,12 @@ import java.util.stream.StreamSupport;
 public class MonitoredEndpointService {
     private MonitoredEndpointRepository monitoredEndpointRepository;
     private UserService userService;
+    private MonitoringService monitoringService;
 
-    public MonitoredEndpointService(MonitoredEndpointRepository monitoredEndpointRepository, UserService userService) {
+    public MonitoredEndpointService(MonitoredEndpointRepository monitoredEndpointRepository, UserService userService, MonitoringService monitoringService) {
         this.monitoredEndpointRepository = monitoredEndpointRepository;
         this.userService = userService;
+        this.monitoringService = monitoringService;
     }
 
     public List<MonitoredEndpointViewContract> getAll() {
@@ -30,10 +32,12 @@ public class MonitoredEndpointService {
                 .toList();
     }
 
+    @Transactional(isolation = Isolation.READ_COMMITTED)
     public MonitoredEndpointViewContract save(MonitoredEndpointInputContract contract) {
         var user = userService.getCurrentlyAuthorisedUser();
         var entity = new MonitoredEndpoint(contract.getName(), contract.getUrl(), LocalDateTime.now(), contract.getMonitoredInterval(), user);
         var savedEntity = monitoredEndpointRepository.save(entity);
+        monitoringService.addToMonitoring(entity);
         return convert(savedEntity);
     }
 
@@ -43,6 +47,8 @@ public class MonitoredEndpointService {
         var originalEntity = monitoredEndpointRepository.findByIdAndOwnerId(id, user.getId()).orElseThrow(() -> new NoSuchElementException(String.format("Monitored endpoint with id %s does not exists", id)));
         var changedEntity = originalEntity.edit(editionContract.getName(), editionContract.getUrl(), editionContract.getMonitoredInterval());
         var savedEntity = monitoredEndpointRepository.save(changedEntity);
+        monitoringService.deleteFromMonitoring(originalEntity.getId());
+        monitoringService.addToMonitoring(savedEntity);
         return convert(savedEntity);
     }
 
@@ -53,6 +59,7 @@ public class MonitoredEndpointService {
             throw new NoSuchElementException(String.format("Monitored endpoint with id %s does not exists", id));
         }
         monitoredEndpointRepository.deleteByIdAndOwnerId(id, user.getId());
+        monitoringService.deleteFromMonitoring(id);
     }
 
     private MonitoredEndpointViewContract convert(MonitoredEndpoint monitoredEndpoint) {

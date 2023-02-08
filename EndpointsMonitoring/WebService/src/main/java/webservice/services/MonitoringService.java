@@ -48,14 +48,24 @@ public class MonitoringService {
     // So, having only call to executor.execute we are making our scheduled task as short as possible - just starting new thread from pool.
     // Maybe it is not so needed - intervals are usually not so short or for us, it is fine to have url monitored less often if there is performance issue on url owner side...
     // Anyway I would discuss it with the team/customer what is desired behaviour before adding second thread pool :)
+    public void addToMonitoring(MonitoredEndpoint endpoint){
+        var monitor = scheduler.scheduleAtFixedRate(() -> {
+            executor.execute(() -> executeMonitoringCheck(endpoint));
+        }, 0, endpoint.getMonitoredInterval(), TimeUnit.SECONDS);
+        scheduledMonitors.put(endpoint.getId(), monitor);
+    }
+
+    public void deleteFromMonitoring(String endpointId) {
+        var scheduledMonitor = scheduledMonitors.get(endpointId);
+        scheduledMonitor.cancel(false);
+        scheduledMonitors.remove(endpointId);
+    }
+
     @EventListener(ApplicationReadyEvent.class)
     public void startExecutionOfStoredMonitoredEndpoints() {
         var monitoredEndpoints = monitoredEndpointRepository.findAll();
         for (var endpoint : monitoredEndpoints) {
-            var monitor = scheduler.scheduleAtFixedRate(() -> {
-                executor.execute(() -> executeMonitoringCheck(endpoint));
-            }, 0, endpoint.getMonitoredInterval(), TimeUnit.SECONDS);
-            scheduledMonitors.put(endpoint.getId(), monitor);
+            addToMonitoring(endpoint);
         }
     }
 
