@@ -23,7 +23,7 @@ create table if not exists monitoring_result (
     id varchar(36) primary key,
     date_of_check datetime,
     http_status int,
-    monitored_interval blob,
+    returned_payload longblob,
     monitored_endpoint_id varchar(36),
     foreign key (monitored_endpoint_id) references monitored_endpoint(id)
 );
