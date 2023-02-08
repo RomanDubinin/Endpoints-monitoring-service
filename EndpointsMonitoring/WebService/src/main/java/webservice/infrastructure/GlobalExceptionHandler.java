@@ -27,8 +27,8 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
     }
 
-    @ExceptionHandler(IllegalAccessException.class)
-    public ResponseEntity<Map<String, Object>> handleError(IllegalAccessException e) {
+    @ExceptionHandler(AuthorizationException.class)
+    public ResponseEntity<Map<String, Object>> handleError(AuthorizationException e) {
         Map<String, Object> response = new HashMap<>();
         response.put("message", e.getMessage());
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);

@@ -16,27 +16,31 @@ import java.util.stream.StreamSupport;
 @Service
 public class MonitoredEndpointService {
     private MonitoredEndpointRepository monitoredEndpointRepository;
+    private UserService userService;
 
-    public MonitoredEndpointService(MonitoredEndpointRepository monitoredEndpointRepository) {
+    public MonitoredEndpointService(MonitoredEndpointRepository monitoredEndpointRepository, UserService userService) {
         this.monitoredEndpointRepository = monitoredEndpointRepository;
+        this.userService = userService;
     }
 
     public List<MonitoredEndpointViewContract> getAll() {
-        return StreamSupport.stream(monitoredEndpointRepository.findAll().spliterator(), false)
+        var user = userService.getCurrentlyAuthorisedUser();
+        return StreamSupport.stream(monitoredEndpointRepository.findAllByOwnerId(user.getId()).spliterator(), false)
                 .map(x -> convert(x))
                 .toList();
     }
 
     public MonitoredEndpointViewContract save(MonitoredEndpointInputContract contract) {
-        //todo add user
-        var entity = new MonitoredEndpoint(contract.getName(), contract.getUrl(), LocalDateTime.now(), contract.getMonitoredInterval(), null);
+        var user = userService.getCurrentlyAuthorisedUser();
+        var entity = new MonitoredEndpoint(contract.getName(), contract.getUrl(), LocalDateTime.now(), contract.getMonitoredInterval(), user);
         var savedEntity = monitoredEndpointRepository.save(entity);
         return convert(savedEntity);
     }
 
     @Transactional(isolation = Isolation.REPEATABLE_READ)
     public MonitoredEndpointViewContract edit(String id, MonitoredEndpointInputContract editionContract) {
-        var originalEntity = monitoredEndpointRepository.findById(id).orElseThrow(() -> new NoSuchElementException(String.format("Monitored endpoint with id %s does not exists", id)));
+        var user = userService.getCurrentlyAuthorisedUser();
+        var originalEntity = monitoredEndpointRepository.findByIdAndOwnerId(id, user.getId()).orElseThrow(() -> new NoSuchElementException(String.format("Monitored endpoint with id %s does not exists", id)));
         var changedEntity = originalEntity.edit(editionContract.getName(), editionContract.getUrl(), editionContract.getMonitoredInterval());
         var savedEntity = monitoredEndpointRepository.save(changedEntity);
         return convert(savedEntity);
@@ -44,10 +48,11 @@ public class MonitoredEndpointService {
 
     @Transactional(isolation = Isolation.REPEATABLE_READ)
     public void delete(String id) {
-        if (!monitoredEndpointRepository.existsById(id)) {
+        var user = userService.getCurrentlyAuthorisedUser();
+        if (!monitoredEndpointRepository.existsByIdAndOwnerId(id, user.getId())) {
             throw new NoSuchElementException(String.format("Monitored endpoint with id %s does not exists", id));
         }
-        monitoredEndpointRepository.deleteById(id);
+        monitoredEndpointRepository.deleteByIdAndOwnerId(id, user.getId());
     }
 
     private MonitoredEndpointViewContract convert(MonitoredEndpoint monitoredEndpoint) {
