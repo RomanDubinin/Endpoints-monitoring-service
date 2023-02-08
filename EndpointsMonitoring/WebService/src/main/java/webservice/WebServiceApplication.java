@@ -5,7 +5,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
-@SpringBootApplication(scanBasePackages = {"webservice"})
+@SpringBootApplication(scanBasePackages = {"webservice", "webmonitoring"})
 @EnableJpaRepositories(basePackages = {"domain.repositories"})
 @EntityScan(basePackages = {"domain.contracts"})
 public class WebServiceApplication {
