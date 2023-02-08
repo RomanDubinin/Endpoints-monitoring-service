@@ -1,6 +1,13 @@
 create database if not exists endpoint_monitoring_db;
 use endpoint_monitoring_db;
 
+create table if not exists user (
+    id varchar(36) primary key,
+    username varchar(100),
+    email varchar(100),
+    access_token varchar(36)
+);
+
 create table if not exists monitored_endpoint (
     id varchar(36) primary key,
     name varchar(100),
@@ -18,13 +25,6 @@ create table if not exists monitoring_result (
     monitored_interval blob,
     monitored_endpoint_id varchar(36),
     foreign key (monitored_endpoint_id) references monitored_endpoint(id)
-);
-
-create table if not exists user (
-    id varchar(36) primary key,
-    username varchar(100),
-    email varchar(100),
-    access_token varchar(36)
 );
 
 
