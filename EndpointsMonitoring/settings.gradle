@@ -1,4 +1,5 @@
 rootProject.name = 'EndpointsMonitoring'
 include 'WebService'
 include 'Domain'
+include 'WebMonitoring'
 
