@@ -5,7 +5,8 @@ create table if not exists user (
     id varchar(36) primary key,
     username varchar(100),
     email varchar(100),
-    access_token varchar(36)
+    access_token varchar(36),
+    unique(access_token)
 );
 
 create table if not exists monitored_endpoint (

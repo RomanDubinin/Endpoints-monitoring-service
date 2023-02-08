@@ -1,9 +1,6 @@
 package domain.contracts;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -19,6 +16,7 @@ public class User {
     private String id;
     private String username;
     private String email;
+    @Column(unique=true)
     private String accessToken;
 
     public User(String username, String email, String accessToken) {
