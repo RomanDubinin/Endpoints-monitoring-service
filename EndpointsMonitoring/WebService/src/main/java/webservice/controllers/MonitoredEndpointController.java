@@ -1,5 +1,6 @@
 package webservice.controllers;
 
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 import webservice.contracts.MonitoredEndpointInputContract;
 import webservice.contracts.MonitoredEndpointViewContract;
@@ -21,12 +22,12 @@ public class MonitoredEndpointController {
     }
 
     @PostMapping
-    public MonitoredEndpointViewContract create(@RequestBody MonitoredEndpointInputContract contract) {
+    public MonitoredEndpointViewContract create(@Valid @RequestBody MonitoredEndpointInputContract contract) {
         return monitoredEndpointService.save(contract);
     }
 
     @PutMapping("{id}")
-    public MonitoredEndpointViewContract edit(@PathVariable String id, @RequestBody MonitoredEndpointInputContract editionContract) {
+    public MonitoredEndpointViewContract edit(@PathVariable String id, @Valid @RequestBody MonitoredEndpointInputContract editionContract) {
         return monitoredEndpointService.edit(id, editionContract);
     }
 
