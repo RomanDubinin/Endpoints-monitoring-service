@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
+import java.util.regex.Pattern;
 
 @Entity
 @Getter
@@ -26,6 +27,9 @@ public class MonitoredEndpoint {
     public MonitoredEndpoint(String name, String url, LocalDateTime dateOfCreation, int monitoredInterval, User owner) {
         if (monitoredInterval <= 0) {
             throw new IllegalArgumentException("monitoredInterval should be integer greater than 0");
+        }
+        if (!Pattern.compile("^(http|https):\\/\\/[^ \"]+$").matcher(url).find()) {
+            throw new IllegalArgumentException("Url is not valid");
         }
         this.name = name;
         this.url = url;
