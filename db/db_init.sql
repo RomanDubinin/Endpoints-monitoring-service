@@ -28,6 +28,19 @@ create table if not exists monitoring_result (
     foreign key (monitored_endpoint_id) references monitored_endpoint(id)
 );
 
+-- create index if exists
+select if (
+    exists(
+        select distinct index_name from information_schema.statistics 
+        where table_schema = 'endpoint_monitoring_db' 
+        and table_name = 'monitoring_result' 
+        and index_name like 'monitoring_result_date_index'
+    )
+    ,'select ''index monitoring_result_date_index already exists'';'
+    ,'create index monitoring_result_date_index on monitoring_result(monitored_endpoint_id, date_of_check desc);') into @x;
+prepare conditional_statement from @x;
+execute conditional_statement;
+deallocate prepare conditional_statement;
 
 -- seed data
 INSERT INTO user (id, username, email, access_token) 
