@@ -43,10 +43,10 @@ execute conditional_statement;
 deallocate prepare conditional_statement;
 
 -- seed data
-INSERT INTO user (id, username, email, access_token) 
-SELECT '00000000-0000-0000-0000-000000000001', 'Applifting', 'info@applifting.cz', '93f39e2f-80de-4033-99ee-249d92736a25' FROM DUAL 
-WHERE NOT EXISTS (SELECT * FROM user WHERE id='00000000-0000-0000-0000-000000000001' LIMIT 1);
+insert into user (id, username, email, access_token) 
+select '00000000-0000-0000-0000-000000000001', 'Applifting', 'info@applifting.cz', '93f39e2f-80de-4033-99ee-249d92736a25' from dual 
+where not exists (select * from user where id='00000000-0000-0000-0000-000000000001' limit 1);
 
-INSERT INTO user (id, username, email, access_token) 
-SELECT '00000000-0000-0000-0000-000000000002', 'Batman', 'batman@example.com', 'dcb20f8a-5657-4f1b-9f7f-ce65739b359e' FROM DUAL 
-WHERE NOT EXISTS (SELECT * FROM user WHERE id='00000000-0000-0000-0000-000000000002' LIMIT 1);
+insert into user (id, username, email, access_token) 
+select '00000000-0000-0000-0000-000000000002', 'Batman', 'batman@example.com', 'dcb20f8a-5657-4f1b-9f7f-ce65739b359e' from dual 
+where not exists (select * from user where id='00000000-0000-0000-0000-000000000002' limit 1);
