@@ -62,6 +62,11 @@ public class MonitoredEndpointService {
         monitoringService.deleteFromMonitoring(id);
     }
 
+    public boolean exists(String id) {
+        var user = userService.getCurrentlyAuthorisedUser();
+        return monitoredEndpointRepository.existsByIdAndOwnerId(id, user.getId());
+    }
+
     private MonitoredEndpointViewContract convert(MonitoredEndpoint monitoredEndpoint) {
         return MonitoredEndpointViewContract
                 .builder()
