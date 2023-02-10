@@ -10,5 +10,6 @@ public interface MonitoredEndpointRepository extends CrudRepository<MonitoredEnd
     Iterable<MonitoredEndpoint> findAllByOwnerId(String ownerId);
     Optional<MonitoredEndpoint> findByIdAndOwnerId(String id, String ownerId);
     boolean existsByIdAndOwnerId(String id, String ownerId);
+    boolean existsByUrlAndOwnerId(String url, String ownerId);
     void deleteByIdAndOwnerId(String id, String ownerId);
 }

@@ -35,6 +35,9 @@ public class MonitoredEndpointService {
     @Transactional(isolation = Isolation.READ_COMMITTED)
     public MonitoredEndpointViewContract save(MonitoredEndpointInputContract contract) {
         var user = userService.getCurrentlyAuthorisedUser();
+        if (monitoredEndpointRepository.existsByUrlAndOwnerId(contract.getUrl(), user.getId())) {
+            throw new IllegalArgumentException("Endpoint with the same url is already exists");
+        }
         var entity = new MonitoredEndpoint(contract.getName(), contract.getUrl(), LocalDateTime.now(), contract.getMonitoredInterval(), user);
         var savedEntity = monitoredEndpointRepository.save(entity);
         monitoringService.addToMonitoring(entity);
@@ -44,6 +47,9 @@ public class MonitoredEndpointService {
     @Transactional(isolation = Isolation.REPEATABLE_READ)
     public MonitoredEndpointViewContract edit(String id, MonitoredEndpointInputContract editionContract) {
         var user = userService.getCurrentlyAuthorisedUser();
+        if (monitoredEndpointRepository.existsByUrlAndOwnerId(editionContract.getUrl(), user.getId())) {
+            throw new IllegalArgumentException("Endpoint with the same url is already exists");
+        }
         var originalEntity = monitoredEndpointRepository.findByIdAndOwnerId(id, user.getId()).orElseThrow(() -> new NoSuchElementException(String.format("Monitored endpoint with id %s does not exists", id)));
         var changedEntity = originalEntity.edit(editionContract.getName(), editionContract.getUrl(), editionContract.getMonitoredInterval());
         var savedEntity = monitoredEndpointRepository.save(changedEntity);
