@@ -77,6 +77,7 @@ public class MonitoringService {
         } catch (ConnectException e) {
             logger.log(Level.WARNING, String.format("Connection failure to endpoint with id %s. Url: %s", endpoint.getId(), endpoint.getUrl()));
         } catch (IOException | InterruptedException e) {
+            logger.log(Level.SEVERE, String.format("Error while retrieving endpoint with id %s. Url: %s", endpoint.getId(), endpoint.getUrl()));
             throw new RuntimeException(e);
         }
     }
