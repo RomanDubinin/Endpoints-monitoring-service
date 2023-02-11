@@ -10,14 +10,22 @@ services:
       - ./../db/db_init.sql:/var/lib/db_init.sql
     environment:
       MYSQL_ROOT_PASSWORD: '***'
+    healthcheck:
+      test: mysql endpoint_monitoring_db --user=root --password='***' --silent --execute "SELECT 1;"
+      interval: 10s
+      timeout: 5s
+      retries: 10  
   webservice:
     build:
       context: ./
       dockerfile: Dockerfile
     container_name: endpoint_monitoring_service
+    depends_on:
+      mysql:
+        condition: service_healthy
     ports:
       - "8080:8080"
-      
+
 volumes:
   my_sql_volume:
     driver: local
