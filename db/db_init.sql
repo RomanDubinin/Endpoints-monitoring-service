@@ -25,7 +25,7 @@ create table if not exists monitoring_result (
     http_status int,
     returned_payload longblob,
     monitored_endpoint_id varchar(36),
-    foreign key (monitored_endpoint_id) references monitored_endpoint(id)
+    foreign key (monitored_endpoint_id) references monitored_endpoint(id) on delete cascade
 );
 
 -- create index if exists
