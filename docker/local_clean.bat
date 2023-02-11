@@ -1,3 +1,0 @@
-docker container stop endpoint_monitoring_db
-docker container rm endpoint_monitoring_db
-docker volume rm docker_my_sql_volume

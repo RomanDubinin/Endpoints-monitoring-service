@@ -1,0 +1,9 @@
+docker container stop endpoint_monitoring_service
+docker container stop endpoint_monitoring_db
+
+docker container rm endpoint_monitoring_service
+docker container rm endpoint_monitoring_db
+
+docker image rm endpointsmonitoring-webservice
+
+docker volume rm endpointsmonitoring_my_sql_volume
