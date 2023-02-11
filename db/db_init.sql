@@ -28,7 +28,7 @@ create table if not exists monitoring_result (
     foreign key (monitored_endpoint_id) references monitored_endpoint(id) on delete cascade
 );
 
--- create index if exists
+-- create index if not exists
 select if (
     exists(
         select distinct index_name from information_schema.statistics 
@@ -38,6 +38,19 @@ select if (
     )
     ,'select ''index monitoring_result_date_index already exists'';'
     ,'create index monitoring_result_date_index on monitoring_result(monitored_endpoint_id, date_of_check desc);') into @x;
+prepare conditional_statement from @x;
+execute conditional_statement;
+deallocate prepare conditional_statement;
+
+select if (
+    exists(
+        select distinct index_name from information_schema.statistics 
+        where table_schema = 'endpoint_monitoring_db' 
+        and table_name = 'monitored_endpoint' 
+        and index_name like 'monitored_endpoint_url_index'
+    )
+    ,'select ''index monitored_endpoint_url_index already exists'';'
+    ,'create index monitored_endpoint_url_index on monitored_endpoint(owner_id, url);') into @x;
 prepare conditional_statement from @x;
 execute conditional_statement;
 deallocate prepare conditional_statement;
